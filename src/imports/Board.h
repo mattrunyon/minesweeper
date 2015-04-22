@@ -1,24 +1,22 @@
 #include "std_lib_facilities_4.h"
+#include <FL/Fl_Window.H>
+#include "TileImages.h"
+#include "Tile.h"
 
-class Board {
-	Fl_Window* board;
+class Board: Fl_Window {
+	void generateMines();
+	void incrementSurroundings(int, int);
+	int numbMines = 0;
+	int width;
+	int height;
+	int numbFlags = 0;
 	public:
-		Board(int w, int h, int m);
+		vector<vector<Tile*>> XYCoordinates;
+		Board(int, int, int);
 		int showBoard();
+		int getNumbFlags();
+		void addNumbFlags(int);
+		int getNumbMines();
+		int getWidth();
+		int getHeight();
 };
-
-Board::Board(int w, int h, int m) {
-	board = new Fl_Window(16*w, 16*h, "Test");
-	board->begin();
-	for (int x = 0; x < 16*w; x += 16) {
-		for (int y = 0; y < 16*h; y += 16) {
-			Fl_Button *box = new Fl_Button(x, y, 16, 16);
-		}
-	}
-	board->end();
-}
-
-int Board::showBoard() {
-	board->show();
-	return Fl::run();
-}
