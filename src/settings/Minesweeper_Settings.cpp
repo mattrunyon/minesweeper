@@ -1,9 +1,9 @@
-#include "std_lib_facilities_4.h"
-#include "Simple_window.h"
-#include "Graph.h"
-#include "Window.h"
-#include "GUI.h"
-#include "Point.h"
+#include "imports/std_lib_facilities_4.h"
+#include "imports/Simple_window.h"
+#include "imports/Graph.h"
+#include "imports/Window.h"
+#include "imports/GUI.h"
+#include "imports/Point.h"
 
 using namespace Graph_lib;
 

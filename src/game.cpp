@@ -8,6 +8,6 @@
 #include "imports/Board.h"
 
 int main() {
-	Board* x = new Board(32, 19, 10);
+	Board* x = new Board(9, 9, 10);
 	x->showBoard();
 }
