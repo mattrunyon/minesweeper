@@ -5,3 +5,4 @@
 void tileCallback(Fl_Widget*);
 void propagateClick(Tile*, Board*);
 void simulateLeftClick(Tile*, Board*);
+void endGame(Tile*, Board*);

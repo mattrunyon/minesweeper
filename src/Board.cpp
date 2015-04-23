@@ -16,6 +16,7 @@ Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h) {
 	width = w;
 	height = h;
 	numbMines = m;
+	maxClicks = w*h - m;
 	generateMines();
 }
 
@@ -68,4 +69,27 @@ int Board::getWidth() {
 
 int Board::getHeight() {
 	return height;
+}
+
+void Board::addTileClicked() {
+	tilesClicked += 1;
+}
+
+bool Board::winGame() {
+	return tilesClicked == maxClicks;
+}
+
+void Board::displayAllMines() {
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			Tile* tile = XYCoordinates[x][y];
+			if (tile->hasMine() == false && tile->getRightClicks() == 1) {
+				tile->displayIncorrectMine();
+			} else if (tile->hasMine() && tile->getRightClicks() != 1) {
+				tile->displayMine();
+			}
+			tile->redraw();
+			tile->deactivate();
+		}
+	}
 }

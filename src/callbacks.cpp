@@ -27,18 +27,29 @@ void simulateLeftClick(Tile* tile, Board* board) {
 		return;
 	}
 	if (tile->hasMine()) {
-		// END GAME
+		endGame(tile, board);
 		cout << "LOSER" << endl;
 	} else {
 		tile->displayClickedTile();
 		tile->setBeenClicked();
 		tile->redraw();
 	}
-	//cout << tile->getAdjacentMines() << endl;
 	if (tile->getAdjacentMines() == 0) {
 		propagateClick(tile, board);
 	}
 }
+
+void endGame(Tile* tile, Board* board) {
+	if (board->winGame()) {
+		// do something for win
+	} else {
+		board->displayAllMines();
+		tile->displayLosingMine();
+		tile->setBeenClicked();
+		tile->redraw();
+	}
+}
+		
 
 void tileCallback(Fl_Widget* widget) {
 	Tile* tile = (Tile*) widget;

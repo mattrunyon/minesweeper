@@ -29,6 +29,18 @@ void Tile::displayClickedTile() {
 	this->image(uncoveredTiles[adjacentMines]->copy(tileSize,tileSize));
 }
 
+void Tile::displayMine() {
+	this->image(mine->copy(tileSize,tileSize));
+}
+
+void Tile::displayIncorrectMine() {
+	this->image(incorrectMine->copy(tileSize,tileSize));
+}
+
+void Tile::displayLosingMine() {
+	this->image(losingMine->copy(tileSize,tileSize));
+}
+
 void Tile::setXYCoordinate(int x, int y) {
 	xCoordinate = x;
 	yCoordinate = y;

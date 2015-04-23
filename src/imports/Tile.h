@@ -25,4 +25,7 @@ class Tile : public Fl_Button {
 		bool hasBeenClicked();
 		void setRightClicks(int);
 		int getRightClicks();
+		void displayMine();
+		void displayIncorrectMine();
+		void displayLosingMine();
 };

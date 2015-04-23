@@ -10,6 +10,8 @@ class Board: Fl_Window {
 	int width;
 	int height;
 	int numbFlags = 0;
+	int tilesClicked = 0;
+	int maxClicks = 0;
 	public:
 		vector<vector<Tile*>> XYCoordinates;
 		Board(int, int, int);
@@ -19,4 +21,7 @@ class Board: Fl_Window {
 		int getNumbMines();
 		int getWidth();
 		int getHeight();
+		void addTileClicked();
+		bool winGame();
+		void displayAllMines();
 };
