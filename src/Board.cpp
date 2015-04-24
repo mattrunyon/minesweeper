@@ -1,18 +1,27 @@
 #include "imports/std_lib_facilities_4.h"
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
+#include <FL/Fl_Box.H>
 #include "imports/Board.h"
 
-Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h) {
+void timerCallback(void* data) {
+	Board* board = (Board*) data;
+	board->incrementTimer();
+	Fl::repeat_timeout(1.0, timerCallback, data);
+}
+
+Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h + 50) {
 	this->begin();
 	for (int x = 0; x < w; x += 1) {
 		for (int y = 0; y < h; y += 1) {
-			Tile *tilePtr = new Tile(x*tileSize, y*tileSize, tileSize, tileSize);
+			Tile *tilePtr = new Tile(x*tileSize, y*tileSize + 50, tileSize, tileSize);
 			XYCoordinates.push_back(vector<Tile*>());
 			XYCoordinates[x].push_back(tilePtr);
 		}
 	}
+	Fl_Box* timerBox = new Fl_Box(0, 0, 50, 50, "0");
 	this->end();
+	timer = timerBox;
 	width = w;
 	height = h;
 	numbMines = m;
@@ -23,7 +32,6 @@ Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h) {
 void Board::generateMines() {
 	srand(time(NULL));
 	int x, y;
-	cout << numbMines << endl;
 	for (int i = 0; i < numbMines; i++) {
 		x = rand() % width;
 		y = rand() % height;
@@ -92,4 +100,26 @@ void Board::displayAllMines() {
 			tile->deactivate();
 		}
 	}
+}
+
+void Board::startTimer() {
+	Fl::add_timeout(1.0, timerCallback, this);
+	timerRunning = true;
+}
+
+void Board::stopTimer() {
+	Fl::remove_timeout(timerCallback);
+	timerRunning = false;
+}
+
+void Board::incrementTimer() {
+	int temp = atoi(timer->label());
+	cout << temp << endl;
+	temp += 1;
+	timer->copy_label(to_string(temp).c_str());
+	timer->redraw();
+}
+
+bool Board::timerIsRunning() {
+	return timerRunning;
 }

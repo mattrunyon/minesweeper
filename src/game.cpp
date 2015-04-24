@@ -9,5 +9,6 @@
 
 int main() {
 	Board* x = new Board(9, 9, 10);
-	x->showBoard();
+	x->show();
+	return Fl::run();
 }

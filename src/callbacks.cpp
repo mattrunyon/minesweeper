@@ -11,7 +11,6 @@ void propagateClick(Tile* tile, Board* board) {
 		for (int j = -1; j < 2; j++) {
 			if (x+i >= 0 && x+i < width && y+j >= 0 && y+j < height) {
 				Tile* newTile = board->XYCoordinates[x+i][y+j];
-				cout << newTile->getXCoordinate() << endl;
 				simulateLeftClick(newTile, board);
 			}
 		}
@@ -19,7 +18,6 @@ void propagateClick(Tile* tile, Board* board) {
 }
 
 void simulateLeftClick(Tile* tile, Board* board) {
-	cout << tile->getXCoordinate() << endl;
 	if (tile->hasBeenClicked()) {
 		return;
 	}
@@ -28,18 +26,22 @@ void simulateLeftClick(Tile* tile, Board* board) {
 	}
 	if (tile->hasMine()) {
 		endGame(tile, board);
-		cout << "LOSER" << endl;
 	} else {
 		tile->displayClickedTile();
 		tile->setBeenClicked();
 		tile->redraw();
+		board->addTileClicked();
 	}
 	if (tile->getAdjacentMines() == 0) {
 		propagateClick(tile, board);
 	}
+	if (board->winGame()) {
+		endGame(tile, board);
+	}
 }
 
 void endGame(Tile* tile, Board* board) {
+	board->stopTimer();
 	if (board->winGame()) {
 		// do something for win
 	} else {
@@ -54,6 +56,9 @@ void endGame(Tile* tile, Board* board) {
 void tileCallback(Fl_Widget* widget) {
 	Tile* tile = (Tile*) widget;
 	Board* board = (Board*) tile->parent();
+	if (board->timerIsRunning() == false) {
+		board->startTimer();
+	}
 	if (tile->hasBeenClicked()) {
 		return;
 	}
