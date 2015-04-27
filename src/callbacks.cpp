@@ -43,9 +43,9 @@ void simulateLeftClick(Tile* tile, Board* board) {
 void endGame(Tile* tile, Board* board) {
 	board->stopTimer();
 	if (board->winGame()) {
-		// do something for win
+		board->displayAllMines(true);
 	} else {
-		board->displayAllMines();
+		board->displayAllMines(false);
 		tile->displayLosingMine();
 		tile->setBeenClicked();
 		tile->redraw();

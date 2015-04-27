@@ -87,13 +87,15 @@ bool Board::winGame() {
 	return tilesClicked == maxClicks;
 }
 
-void Board::displayAllMines() {
+void Board::displayAllMines(bool playerWin) {
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 			Tile* tile = XYCoordinates[x][y];
 			if (tile->hasMine() == false && tile->getRightClicks() == 1) {
 				tile->displayIncorrectMine();
-			} else if (tile->hasMine() && tile->getRightClicks() != 1) {
+			} else if (tile->hasMine() && playerWin) {
+				tile->image(flaggedMine->copy(tileSize, tileSize));
+			} else if (tile->hasMine() && tile->getRightClicks() != 1 && playerWin == false) {
 				tile->displayMine();
 			}
 			tile->redraw();
@@ -114,7 +116,6 @@ void Board::stopTimer() {
 
 void Board::incrementTimer() {
 	int temp = atoi(timer->label());
-	cout << temp << endl;
 	temp += 1;
 	timer->copy_label(to_string(temp).c_str());
 	timer->redraw();

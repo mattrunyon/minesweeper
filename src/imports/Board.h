@@ -26,7 +26,7 @@ class Board: public Fl_Window {
 		int getHeight();
 		void addTileClicked();
 		bool winGame();
-		void displayAllMines();
+		void displayAllMines(bool);
 		void startTimer();
 		void stopTimer();
 		bool timerIsRunning();
