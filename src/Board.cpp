@@ -10,18 +10,21 @@ void timerCallback(void* data) {
 	Fl::repeat_timeout(1.0, timerCallback, data);
 }
 
-Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h + 50) {
+Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h + 52) {
 	this->begin();
 	for (int x = 0; x < w; x += 1) {
 		for (int y = 0; y < h; y += 1) {
-			Tile *tilePtr = new Tile(x*tileSize, y*tileSize + 50, tileSize, tileSize);
+			Tile *tilePtr = new Tile(x*tileSize, y*tileSize + 52, tileSize, tileSize);
 			XYCoordinates.push_back(vector<Tile*>());
 			XYCoordinates[x].push_back(tilePtr);
 		}
 	}
-	Fl_Box* timerBox = new Fl_Box(0, 0, 50, 50, "0");
+	timer = new Fl_Box(0, 0, tileSize*w/3, 52, "0");
+	smiley = new Fl_Box(tileSize*w/3, 6, tileSize*w/3, 52, "");
+	smiley->image(normalSmiley->copy(42, 42));
+	smiley->align(FL_ALIGN_CENTER);
+	minesRemaining = new Fl_Box(tileSize*2*w/3, 0, tileSize*w/3, 52, to_string(m).c_str());
 	this->end();
-	timer = timerBox;
 	width = w;
 	height = h;
 	numbMines = m;

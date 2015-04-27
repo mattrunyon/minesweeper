@@ -32,5 +32,7 @@ class Board: public Fl_Window {
 		bool timerIsRunning();
 		void incrementTimer();
 		Fl_Box* timer;
+		Fl_Box* smiley;
+		Fl_Box* minesRemaining;
 		int timerCount = 0;
 };

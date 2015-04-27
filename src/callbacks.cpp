@@ -43,8 +43,13 @@ void simulateLeftClick(Tile* tile, Board* board) {
 void endGame(Tile* tile, Board* board) {
 	board->stopTimer();
 	if (board->winGame()) {
+		board->smiley->image(winSmiley->copy(42, 42));
+		board->smiley->redraw();
+		board->minesRemaining->copy_label("0");
 		board->displayAllMines(true);
 	} else {
+		board->smiley->image(loseSmiley->copy(42, 42));
+		board->smiley->redraw();
 		board->displayAllMines(false);
 		tile->displayLosingMine();
 		tile->setBeenClicked();
@@ -72,10 +77,12 @@ void tileCallback(Fl_Widget* widget) {
 				tile->image(flaggedMine->copy(tileSize, tileSize));
 				tile->setRightClicks(1);
 				board->addNumbFlags(1);
+				board->minesRemaining->copy_label(to_string(board->getNumbMines() - board->getNumbFlags()).c_str());
 			} else if (tile->getRightClicks() == 1) {
 				tile->image(question->copy(tileSize, tileSize));
 				tile->setRightClicks(2);
 				board->addNumbFlags(-1);
+				board->minesRemaining->copy_label(to_string(board->getNumbMines() - board->getNumbFlags()).c_str());
 			} else {
 				tile->image(coveredTile->copy(tileSize, tileSize));
 				tile->setRightClicks(0);
