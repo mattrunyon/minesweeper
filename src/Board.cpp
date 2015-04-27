@@ -1,8 +1,11 @@
 #include "imports/std_lib_facilities_4.h"
 #include <FL/Fl.H>
-#include <FL/Fl_Window.H>
+#include <FL/Fl_Group.H>
 #include <FL/Fl_Box.H>
 #include "imports/Board.h"
+#ifndef smileyCallback
+void smileyCallback(Fl_Widget* widget);
+#endif
 
 void timerCallback(void* data) {
 	Board* board = (Board*) data;
@@ -10,7 +13,7 @@ void timerCallback(void* data) {
 	Fl::repeat_timeout(1.0, timerCallback, data);
 }
 
-Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h + 52) {
+Board::Board(int w, int h, int m): Fl_Group(0, 0, tileSize*w, tileSize*h + 52, "") {
 	this->begin();
 	for (int x = 0; x < w; x += 1) {
 		for (int y = 0; y < h; y += 1) {
@@ -19,11 +22,16 @@ Board::Board(int w, int h, int m): Fl_Window(tileSize*w, tileSize*h + 52) {
 			XYCoordinates[x].push_back(tilePtr);
 		}
 	}
-	timer = new Fl_Box(0, 0, tileSize*w/3, 52, "0");
-	smiley = new Fl_Box(tileSize*w/3, 6, tileSize*w/3, 52, "");
+	timer = new Fl_Box(0, 8, tileSize*w/3, 42, "0");
+	Fl_Box* timerLabel = new Fl_Box(0, 4, tileSize*w/3, 10, "Timer");
+	
+	smiley = new Fl_Button(tileSize*w/2 - 21, 5, 42, 42);
 	smiley->image(normalSmiley->copy(42, 42));
-	smiley->align(FL_ALIGN_CENTER);
-	minesRemaining = new Fl_Box(tileSize*2*w/3, 0, tileSize*w/3, 52, to_string(m).c_str());
+	smiley->callback(smileyCallback);
+	
+	minesRemaining = new Fl_Box(tileSize*2*w/3, 8, tileSize*w/3, 42, "");
+	minesRemaining->copy_label(to_string(m).c_str());
+	Fl_Box* minesLabel = new Fl_Box(tileSize*2*w/3, 4, tileSize*w/3, 10, "Mines Left");
 	this->end();
 	width = w;
 	height = h;
@@ -126,4 +134,12 @@ void Board::incrementTimer() {
 
 bool Board::timerIsRunning() {
 	return timerRunning;
+}
+
+void Board::setGameOver() {
+	gameEnded = true;
+}
+
+bool Board::gameOver() {
+	return gameEnded;
 }

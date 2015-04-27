@@ -1,8 +1,10 @@
 #include "imports/callbacks.h"
 #include <FL/Fl_JPEG_Image.H>
+#include <FL/fl_ask.H>
+#include <FL/Fl_Window.H>
+#include "imports/Game.h"
 
 void propagateClick(Tile* tile, Board* board) {
-	int test = 0;
 	int x = tile->getXCoordinate();
 	int y = tile->getYCoordinate();
 	int width = board->getWidth();
@@ -55,25 +57,62 @@ void endGame(Tile* tile, Board* board) {
 		tile->setBeenClicked();
 		tile->redraw();
 	}
+	board->setGameOver();
 }
-		
+
+void smileyCallback(Fl_Widget* widget) {
+	Board* board = (Board*) widget->parent();
+	Fl_Window* window = (Fl_Window*) board->parent();
+	switch (Fl::event_button()) {
+		case FL_LEFT_MOUSE: {
+			if (board->gameOver() || fl_choice("Are you sure you want to reset the game?", "No", "Yes", "")) {
+				board->stopTimer();
+				Fl::delete_widget(board);
+				window->begin();
+				Board* currentBoard = new Board(9, 9, 10);
+				window->end();
+				window->redraw();
+			}
+			break;
+		}
+	}
+}
 
 void tileCallback(Fl_Widget* widget) {
 	Tile* tile = (Tile*) widget;
 	Board* board = (Board*) tile->parent();
+	
 	if (board->timerIsRunning() == false) {
 		board->startTimer();
 	}
-	if (tile->hasBeenClicked()) {
-		return;
+	int flags = 0;
+	int x = tile->getXCoordinate();
+	int y = tile->getYCoordinate();
+	int width = board->getWidth();
+	int height = board->getHeight();
+	for (int i = -1; i < 2; i++) {
+		for (int j = -1; j < 2; j++) {
+			if (x+i >= 0 && x+i < width && y+j >= 0 && y+j < height && board->XYCoordinates[x+i][y+j]->getRightClicks() == 1) {
+				flags += 1;
+			}
+		}
 	}
+	
 	switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE: {
-			simulateLeftClick(tile, board);
+			if (tile->hasBeenClicked() && Fl::event_button3() != 0 && tile->getAdjacentMines() == flags) {
+				propagateClick(tile, board);
+			} else if (tile->hasBeenClicked() == false && Fl::event_button3() == 0) {
+				simulateLeftClick(tile, board);
+			}
 			break;
 		}
 		case FL_RIGHT_MOUSE: {
-			if (tile->getRightClicks() == 0 && board->getNumbFlags() < board->getNumbMines()) {
+			if (tile->hasBeenClicked() && Fl::event_button1() != 0 && tile->getAdjacentMines() == flags) {
+				propagateClick(tile, board);
+			} else if (Fl::event_button1() != 0 || tile->hasBeenClicked()) {
+				break;
+			} else if (tile->getRightClicks() == 0 && board->getNumbFlags() < board->getNumbMines()) {
 				tile->image(flaggedMine->copy(tileSize, tileSize));
 				tile->setRightClicks(1);
 				board->addNumbFlags(1);
