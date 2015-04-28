@@ -2,7 +2,6 @@
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Window.H>
-#include "imports/Game.h"
 
 void propagateClick(Tile* tile, Board* board) {
 	int x = tile->getXCoordinate();
@@ -67,9 +66,12 @@ void smileyCallback(Fl_Widget* widget) {
 		case FL_LEFT_MOUSE: {
 			if (board->gameOver() || fl_choice("Are you sure you want to reset the game?", "No", "Yes", "")) {
 				board->stopTimer();
+				int w = board->getWidth();
+				int h = board->getHeight();
+				int m = board->getNumbMines();
 				Fl::delete_widget(board);
 				window->begin();
-				Board* currentBoard = new Board(9, 9, 10);
+				Board* currentBoard = new Board(w, h, m);
 				window->end();
 				window->redraw();
 			}

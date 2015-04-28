@@ -1,58 +1,28 @@
-#include "std_lib_facilities_4.h"
-#include <sstream>
-#include <FL/Fl.H> 
-#include <FL/Fl_Box.H>
+#include "imports/Minesweeper.h"
+#include "imports/Board.h"
 #include <FL/Fl_Window.H>
-#include <FL/Fl_JPEG_Image.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Output.H>
-#include "Board.h"
-
-class Minesweeper_Window : public Fl_Window
-{
-	public:
-		Minesweeper_Window(int w, int h, const char* title);
-		~Minesweeper_Window() {};
-		Fl_Button* Start_Button;
-		Fl_Button* Exit_Button;
-		Fl_Box* D_Setting;
-		Fl_Button* Easy_Button;
-		Fl_Button* Med_Button;
-		Fl_Button* Hard_Button;
-		Fl_Box* Num_Tiles;
-		Fl_Box* Num_Mines;
-
-	private:
-		int x_mines = 4;
-		int y_mines = 4;
-		int mines_count = 5;
-		
-		static void start_cb(Fl_Widget* widget);
-		static void exit_cb(Fl_Widget* widget);
-		static void easy_pressed(Fl_Widget* widget);
-		static void med_pressed(Fl_Widget* widget);
-		static void hard_pressed(Fl_Widget* widget);
-};
 
 void Minesweeper_Window::start_cb(Fl_Widget* widget)
 {
 	Fl_Button* S = (Fl_Button*) widget;
 	Minesweeper_Window* settings = (Minesweeper_Window*) S->parent();
-	settings->Start_Button->hide();
+	Fl_Window* win = (Fl_Window*) settings->parent();
+	/*settings->Start_Button->hide();
 	settings->D_Setting->hide();
 	settings->Easy_Button->hide();
 	settings->Med_Button->hide();
 	settings->Hard_Button->hide();
 	settings->Num_Tiles->hide();
-	settings->Num_Mines->hide();
+	settings->Num_Mines->hide();*/
+	win->clear();
 	
 	int w, h, m;
 	w = settings->x_mines;
 	h = settings->y_mines;
 	m = settings->mines_count;
-	Board* x = new Board(w, h, m);
-	x->showBoard();
+	Board* board = new Board(w, h, m);
+	win->resize(win->x(), win->y(), board->w(), board->h());
+	win->add(board);
 }
 
 void Minesweeper_Window::exit_cb(Fl_Widget* widget)
@@ -101,7 +71,7 @@ void Minesweeper_Window::hard_pressed(Fl_Widget* widget)
 	settings->mines_count = 99;
 }
 
-Minesweeper_Window::Minesweeper_Window(int w, int h, const char* title):Fl_Window(w,h,title) 
+Minesweeper_Window::Minesweeper_Window(int w, int h, const char* title):Fl_Group(0, 0, w,h,title) 
 { 
 	this->begin();
 	
@@ -135,9 +105,9 @@ Minesweeper_Window::Minesweeper_Window(int w, int h, const char* title):Fl_Windo
 	this->end();
 }
 	
-int main()
+/*int main()
 {
 	Minesweeper_Window* win = new Minesweeper_Window(600, 400, "Minesweeper");
 	win->show();
 	return (Fl::run());
-}
+}*/

@@ -1,15 +1,17 @@
-#include "imports/Board.h"
+#include "imports/Minesweeper.h"
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
-#include "imports/Game.h"
 
 int main() {
-	/*Game* game = new Game();
-	game->newGame();*/
-	Fl_Window* test = new Fl_Window(9*24, 9*24+52);
+	Fl_Window* win = new Fl_Window(600, 400, "Minesweeper");
+	Minesweeper_Window* settings = new Minesweeper_Window(600, 400, "Minesweeper");
+	win->end();
+	win->show();
+	return (Fl::run());
+	/*Fl_Window* test = new Fl_Window(9*24, 9*24+52);
 	test->begin();
 	Board* currentBoard = new Board(9, 9, 10);
 	test->end();
 	test->show();
-	return Fl::run();
+	return Fl::run();*/
 }
