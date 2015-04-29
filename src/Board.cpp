@@ -6,6 +6,9 @@
 #ifndef smileyCallback
 void smileyCallback(Fl_Widget* widget);
 #endif
+#ifndef settingsCallback
+void settingsCallback(Fl_Widget* widget);
+#endif
 
 void timerCallback(void* data) {
 	Board* board = (Board*) data;
@@ -13,11 +16,11 @@ void timerCallback(void* data) {
 	Fl::repeat_timeout(1.0, timerCallback, data);
 }
 
-Board::Board(int w, int h, int m): Fl_Group(0, 0, tileSize*w, tileSize*h + 52, "") {
+Board::Board(int w, int h, int m, bool d): Fl_Group(0, 0, tileSize*w, tileSize*h + 72, "") {
 	this->begin();
 	for (int x = 0; x < w; x += 1) {
 		for (int y = 0; y < h; y += 1) {
-			Tile *tilePtr = new Tile(x*tileSize, y*tileSize + 52, tileSize, tileSize);
+			Tile *tilePtr = new Tile(x*tileSize, y*tileSize + 72, tileSize, tileSize);
 			XYCoordinates.push_back(vector<Tile*>());
 			XYCoordinates[x].push_back(tilePtr);
 		}
@@ -29,6 +32,12 @@ Board::Board(int w, int h, int m): Fl_Group(0, 0, tileSize*w, tileSize*h + 52, "
 	smiley->image(normalSmiley->copy(42, 42));
 	smiley->callback(smileyCallback);
 	
+	resetButton = new Fl_Button(tileSize*w/2 - 65, 46, 65, 20, "Reset");
+	resetButton->callback(smileyCallback);
+	
+	settingsButton = new Fl_Button(tileSize*w/2, 46, 65, 20, "Settings");
+	settingsButton->callback(settingsCallback);
+	
 	minesRemaining = new Fl_Box(tileSize*2*w/3, 8, tileSize*w/3, 42, "");
 	minesRemaining->copy_label(to_string(m).c_str());
 	Fl_Box* minesLabel = new Fl_Box(tileSize*2*w/3, 4, tileSize*w/3, 10, "Mines Left");
@@ -37,6 +46,7 @@ Board::Board(int w, int h, int m): Fl_Group(0, 0, tileSize*w, tileSize*h + 52, "
 	height = h;
 	numbMines = m;
 	maxClicks = w*h - m;
+	debug = d;
 	generateMines();
 }
 
@@ -51,6 +61,11 @@ void Board::generateMines() {
 			y = rand() % height;
 		}
 		XYCoordinates[x][y]->addMine();
+		if (debug) {
+			XYCoordinates[x][y]->image(nullptr);
+			XYCoordinates[x][y]->color(FL_RED);
+			XYCoordinates[x][y]->redraw();
+		}
 		incrementSurroundings(x, y);
 	}
 }

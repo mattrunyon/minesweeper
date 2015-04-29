@@ -21,7 +21,7 @@ class Board: public Fl_Group {
 	bool gameEnded = false;
 	public:
 		vector<vector<Tile*>> XYCoordinates;
-		Board(int, int, int);
+		Board(int, int, int, bool);
 		int showBoard();
 		int getNumbFlags();
 		void addNumbFlags(int);
@@ -42,4 +42,7 @@ class Board: public Fl_Group {
 		int timerCount = 0;
 		void setGameOver();
 		bool gameOver();
+		bool debug = false;
+		Fl_Button* settingsButton;
+		Fl_Button* resetButton;
 };

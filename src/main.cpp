@@ -3,8 +3,8 @@
 #include <FL/Fl_Window.H>
 
 int main() {
-	Fl_Window* win = new Fl_Window(600, 400, "Minesweeper");
-	Minesweeper_Window* settings = new Minesweeper_Window(600, 400, "Minesweeper");
+	Fl_Window* win = new Fl_Window(0, 0, 330, 160, "Minesweeper");
+	Minesweeper_Window* settings = new Minesweeper_Window(330, 160, "Minesweeper");
 	win->end();
 	win->show();
 	return (Fl::run());

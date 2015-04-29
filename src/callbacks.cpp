@@ -1,4 +1,5 @@
 #include "imports/callbacks.h"
+#include "imports/Minesweeper.h"
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Window.H>
@@ -64,20 +65,29 @@ void smileyCallback(Fl_Widget* widget) {
 	Fl_Window* window = (Fl_Window*) board->parent();
 	switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE: {
-			if (board->gameOver() || fl_choice("Are you sure you want to reset the game?", "No", "Yes", "")) {
+			if (board->gameOver() || fl_choice("Are you sure you want to reset the game?", "Cancel", "Yes", "No") == 1) {
 				board->stopTimer();
 				int w = board->getWidth();
 				int h = board->getHeight();
 				int m = board->getNumbMines();
 				Fl::delete_widget(board);
 				window->begin();
-				Board* currentBoard = new Board(w, h, m);
+				Board* currentBoard = new Board(w, h, m, board->debug);
 				window->end();
 				window->redraw();
 			}
 			break;
 		}
 	}
+}
+
+void settingsCallback(Fl_Widget* widget) {
+	Board* board = (Board*) widget->parent();
+	Fl_Window* window = (Fl_Window*) board->parent();
+	Fl_Window* win = new Fl_Window(0, 0, 330, 160, "Minesweeper");
+	Minesweeper_Window* settings = new Minesweeper_Window(330, 160, "Minesweeper");
+	win->end();
+	win->show();
 }
 
 void tileCallback(Fl_Widget* widget) {

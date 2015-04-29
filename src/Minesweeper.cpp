@@ -1,5 +1,6 @@
 #include "imports/Minesweeper.h"
 #include "imports/Board.h"
+#include <FL/fl_ask.H>
 #include <FL/Fl_Window.H>
 
 void Minesweeper_Window::start_cb(Fl_Widget* widget)
@@ -7,22 +8,61 @@ void Minesweeper_Window::start_cb(Fl_Widget* widget)
 	Fl_Button* S = (Fl_Button*) widget;
 	Minesweeper_Window* settings = (Minesweeper_Window*) S->parent();
 	Fl_Window* win = (Fl_Window*) settings->parent();
+	
+	int w, h, m;
+	if (settings->wInput->visible()) {
+		w = atoi(settings->wInput->value());
+		h = atoi(settings->hInput->value());
+		m = atoi(settings->mineInput->value());
+		if (w*h <= m) {
+			fl_alert("There must be less mines than possible tile spaces!");
+			return;
+		}
+	} else {
+		w = settings->x_mines;
+		h = settings->y_mines;
+		m = settings->mines_count;
+	}
+	
+	bool debugMode = false;
+	if (settings->debugButton->value()) {
+		debugMode = true;
+	}
+	
 	/*settings->Start_Button->hide();
+	settings->Exit_Button->hide();
 	settings->D_Setting->hide();
 	settings->Easy_Button->hide();
 	settings->Med_Button->hide();
 	settings->Hard_Button->hide();
+	settings->Custom_Button->hide();
 	settings->Num_Tiles->hide();
-	settings->Num_Mines->hide();*/
-	win->clear();
+	settings->Num_Mines->hide();
+	settings->debugButton->hide();
+	settings->wInput->hide();
+	settings->hInput->hide();
+	settings->mineInput->hide();*/
 	
-	int w, h, m;
-	w = settings->x_mines;
-	h = settings->y_mines;
-	m = settings->mines_count;
-	Board* board = new Board(w, h, m);
-	win->resize(win->x(), win->y(), board->w(), board->h());
-	win->add(board);
+	int choice = 1;
+	bool gameAlreadyGoing = Fl::next_window(win) != nullptr;
+	if (gameAlreadyGoing) {
+		choice = fl_choice("Are you sure you want to reset the game?", "Cancel", "Yes", "No");
+	}
+	if (choice == 1) {
+		if (gameAlreadyGoing) {
+			Fl_Window* tempWin = Fl::next_window(win);
+			Board* tempBoard = (Board*) tempWin->child(0);
+			tempBoard->stopTimer();
+		}
+		Board* board = new Board(w, h, m, debugMode);
+		Fl::delete_widget(Fl::next_window(win));
+		Fl::delete_widget(win);
+		win = new Fl_Window(win->x(), win->y(), board->w(), board->h());
+		win->end();
+		win->add(board);
+		win->show();
+	}
+	
 }
 
 void Minesweeper_Window::exit_cb(Fl_Widget* widget)
@@ -37,12 +77,16 @@ void Minesweeper_Window::easy_pressed(Fl_Widget* widget)
 	Fl_Button* E = (Fl_Button*) widget;
 	Minesweeper_Window* settings = (Minesweeper_Window*) E->parent();
 	settings->Num_Tiles->label("Size of board: 9 x 9 board");
-	settings->Num_Tiles->redraw();
 	settings->Num_Mines->label("Number of mines: 10 mines");
-	settings->Num_Mines->redraw();
+	settings->D_Setting->label("Set Difficulty: Easy");
 	settings->x_mines = 9;
 	settings->y_mines = 9;
 	settings->mines_count = 10;
+	
+	settings->wInput->hide();
+	settings->hInput->hide();
+	settings->mineInput->hide();
+	settings->redraw();
 }
 
 void Minesweeper_Window::med_pressed(Fl_Widget* widget)
@@ -50,12 +94,16 @@ void Minesweeper_Window::med_pressed(Fl_Widget* widget)
 	Fl_Button* M = (Fl_Button*) widget;
 	Minesweeper_Window* settings = (Minesweeper_Window*) M->parent();
 	settings->Num_Tiles->label("Size of board: 16 x 16 board");
-	settings->Num_Tiles->redraw();
 	settings->Num_Mines->label("Number of mines: 40 mines");
-	settings->Num_Mines->redraw();
+	settings->D_Setting->label("Set Difficulty: Medium");
 	settings->x_mines = 16;
 	settings->y_mines = 16;
 	settings->mines_count = 40;
+	
+	settings->wInput->hide();
+	settings->hInput->hide();
+	settings->mineInput->hide();
+	settings->redraw();
 }
 
 void Minesweeper_Window::hard_pressed(Fl_Widget* widget)
@@ -63,12 +111,29 @@ void Minesweeper_Window::hard_pressed(Fl_Widget* widget)
 	Fl_Button* H = (Fl_Button*) widget;
 	Minesweeper_Window* settings = (Minesweeper_Window*) H->parent();
 	settings->Num_Tiles->label("Size of board: 16 x 30 board");
-	settings->Num_Tiles->redraw();
 	settings->Num_Mines->label("Number of mines: 99 mines");
-	settings->Num_Mines->redraw();
+	settings->D_Setting->label("Set Difficulty: Hard");
 	settings->x_mines = 30;
 	settings->y_mines = 16;
 	settings->mines_count = 99;
+	
+	settings->wInput->hide();
+	settings->hInput->hide();
+	settings->mineInput->hide();
+	settings->redraw();
+}
+
+void Minesweeper_Window::custom_pressed(Fl_Widget* widget) {
+	Fl_Button* C = (Fl_Button*) widget;
+	Minesweeper_Window* settings = (Minesweeper_Window*) C->parent();
+	settings->Num_Tiles->label("Size of board: ");
+	settings->Num_Mines->label("Number of mines: ");
+	settings->D_Setting->label("Set Difficulty: Custom");
+	
+	settings->wInput->show();
+	settings->hInput->show();
+	settings->mineInput->show();
+	settings->redraw();
 }
 
 Minesweeper_Window::Minesweeper_Window(int w, int h, const char* title):Fl_Group(0, 0, w,h,title) 
@@ -76,38 +141,46 @@ Minesweeper_Window::Minesweeper_Window(int w, int h, const char* title):Fl_Group
 	this->begin();
 	
 	// The start button and its callback
-	Start_Button = new Fl_Button(255, 300, 90, 20, "Start Game");
+	Start_Button = new Fl_Button(110, 105, 90, 20, "Start Game");
 	Start_Button->callback((Fl_Callback*) start_cb, this);
 	
 	// The Exit button and its callback
-	Exit_Button = new Fl_Button(255, 330, 90, 20, "Exit Game");
+	Exit_Button = new Fl_Button(110, 135, 90, 20, "Exit Game");
 	Exit_Button->callback((Fl_Callback*) exit_cb, this);
 	
 	// Settings Title
-	D_Setting = new Fl_Box(160, 165, 100, 20, "Set Difficulty:");
+	D_Setting = new Fl_Box(10, 0, 0, 20, "Set Difficulty: Easy");
+	D_Setting->align(FL_ALIGN_RIGHT);
 	
 	// The Easy Button and its callback
-	Easy_Button = new Fl_Button(160, 185, 100, 20, "Easy");
+	Easy_Button = new Fl_Button(10, 20, 100, 20, "Easy");
 	Easy_Button->callback((Fl_Callback*) easy_pressed, this);
 	
 	// The Medium Button and its callback
-	Med_Button = new Fl_Button(160, 205, 100, 20, "Medium");
+	Med_Button = new Fl_Button(10, 40, 100, 20, "Medium");
 	Med_Button->callback((Fl_Callback*) med_pressed, this);
 	
 	// The Hard Button and its callback
-	Hard_Button = new Fl_Button(160, 225, 100, 20, "Hard");
+	Hard_Button = new Fl_Button(10, 60, 100, 20, "Hard");
 	Hard_Button->callback((Fl_Callback*) hard_pressed, this);
 	
+	Custom_Button = new Fl_Button(10, 80, 100, 20, "Custom");
+	Custom_Button->callback((Fl_Callback*) custom_pressed, this);
+	
 	// The displays of the conditions of the difficulty
-	Num_Tiles  = new Fl_Box(260, 190, 200, 20, "Size of board: 4 x 4 board");
-	Num_Mines = new Fl_Box(260, 220, 200, 20, "Number of Mines: 5 mines");
+	Num_Tiles = new Fl_Box(110, 25, 0, 20, "Size of board: 9 x 9 board");
+	Num_Tiles->align(FL_ALIGN_RIGHT);
+	Num_Mines = new Fl_Box(110, 55, 0, 20, "Number of mines: 10 mines");
+	Num_Mines->align(FL_ALIGN_RIGHT);
+	
+	wInput = new Fl_Int_Input(210, 25, 50, 20, "");
+	wInput->hide();
+	hInput = new Fl_Int_Input(280, 25, 50, 20, "");
+	hInput->hide();
+	mineInput = new Fl_Int_Input(240, 55, 50, 20, "");
+	mineInput->hide();
+	
+	debugButton = new Fl_Check_Button(200, 0, 90, 20, "Debug Mode");
 	
 	this->end();
 }
-	
-/*int main()
-{
-	Minesweeper_Window* win = new Minesweeper_Window(600, 400, "Minesweeper");
-	win->show();
-	return (Fl::run());
-}*/

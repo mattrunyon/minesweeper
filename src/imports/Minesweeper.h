@@ -7,9 +7,22 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Output.H>
+#include <FL/Fl_Int_Input.H>
+#include <FL/Fl_Check_Button.H>
 
 class Minesweeper_Window : public Fl_Group
 {
+	int x_mines = 9;
+	int y_mines = 9;
+	int mines_count = 10;
+	
+	static void start_cb(Fl_Widget* widget);
+	static void exit_cb(Fl_Widget* widget);
+	static void easy_pressed(Fl_Widget* widget);
+	static void med_pressed(Fl_Widget* widget);
+	static void hard_pressed(Fl_Widget* widget);
+	static void custom_pressed(Fl_Widget* widget);
+	
 	public:
 		Minesweeper_Window(int w, int h, const char* title);
 		~Minesweeper_Window() {};
@@ -19,17 +32,12 @@ class Minesweeper_Window : public Fl_Group
 		Fl_Button* Easy_Button;
 		Fl_Button* Med_Button;
 		Fl_Button* Hard_Button;
+		Fl_Button* Custom_Button;
 		Fl_Box* Num_Tiles;
 		Fl_Box* Num_Mines;
-
-	private:
-		int x_mines = 4;
-		int y_mines = 4;
-		int mines_count = 5;
-		
-		static void start_cb(Fl_Widget* widget);
-		static void exit_cb(Fl_Widget* widget);
-		static void easy_pressed(Fl_Widget* widget);
-		static void med_pressed(Fl_Widget* widget);
-		static void hard_pressed(Fl_Widget* widget);
+		Fl_Int_Input* wInput;
+		Fl_Int_Input* hInput;
+		Fl_Int_Input* mineInput;
+		Fl_Check_Button* debugButton;
+		Fl_Button* about;
 };
