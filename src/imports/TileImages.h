@@ -10,7 +10,6 @@ static int tileSize = 24;
 static Fl_JPEG_Image* normalSmiley = new Fl_JPEG_Image("tileImages/normalSmiley.jpg");
 static Fl_JPEG_Image* loseSmiley = new Fl_JPEG_Image("tileImages/loseSmiley.jpg");
 static Fl_JPEG_Image* winSmiley = new Fl_JPEG_Image("tileImages/winSmiley.jpg");
-static Fl_JPEG_Image* invalidSmiley = new Fl_JPEG_Image("tileImages/invalidSmiley.jpg");
 
 static Fl_JPEG_Image* coveredTile = new Fl_JPEG_Image("tileImages/coveredTile.jpg");
 static Fl_JPEG_Image* flaggedMine = new Fl_JPEG_Image("tileImages/flaggedMine.jpg");

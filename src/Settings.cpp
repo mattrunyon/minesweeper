@@ -9,6 +9,11 @@ void Settings_Window::start_cb(Fl_Widget* widget)
 	Settings_Window* settings = (Settings_Window*) S->parent();
 	Fl_Window* win = (Fl_Window*) settings->parent();
 	
+	bool debugMode = false;
+	if (settings->debugButton->value()) {
+		debugMode = true;
+	}
+	
 	int w, h, m;
 	if (settings->wInput->visible()) {
 		w = atoi(settings->wInput->value());
@@ -22,11 +27,6 @@ void Settings_Window::start_cb(Fl_Widget* widget)
 		w = settings->x_mines;
 		h = settings->y_mines;
 		m = settings->mines_count;
-	}
-	
-	bool debugMode = false;
-	if (settings->debugButton->value()) {
-		debugMode = true;
 	}
 	
 	int choice = 1;
@@ -47,6 +47,12 @@ void Settings_Window::start_cb(Fl_Widget* widget)
 		win->end();
 		win->add(board);
 		win->show();
+		
+		if (debugMode) {
+			cout << w << " tiles wide.\n";
+			cout << h << " tiles tall.\n";
+			cout << m << " mines on the board.\n\n";
+		}
 	}
 	
 }

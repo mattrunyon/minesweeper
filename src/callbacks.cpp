@@ -8,6 +8,10 @@
  * Iterates through the surrounding tiles (-1 to +1 x and y) and simulates a left click on them.
  */
 void propagateClick(Tile* tile, Board* board) {
+	if (board->debug) {
+		cout << "Uncovering all tiles surrounding tile at (" << tile->getXCoordinate() << ", " << tile->getYCoordinate() << ").\n\n";
+	}
+
 	int x = tile->getXCoordinate();
 	int y = tile->getYCoordinate();
 	int width = board->getWidth();
@@ -61,12 +65,21 @@ void simulateLeftClick(Tile* tile, Board* board) {
  */
 void endGame(Tile* tile, Board* board) {
 	board->stopTimer();
+	if (board->debug) {
+		cout << "Game is ending.\n";
+	}
 	if (board->winGame()) {
+		if (board->debug) {
+			cout << "Player won!\n\n";
+		}
 		board->smiley->image(winSmiley->copy(42, 42));
 		board->smiley->redraw();
 		board->minesRemaining->copy_label("0");
 		board->displayAllMines(true);
 	} else {
+		if (board->debug) {
+			cout << "Player lost.\n\n";
+		}
 		board->smiley->image(loseSmiley->copy(42, 42));
 		board->smiley->redraw();
 		board->displayAllMines(false);
@@ -129,6 +142,7 @@ void tileCallback(Fl_Widget* widget) {
 	int y = tile->getYCoordinate();
 	int width = board->getWidth();
 	int height = board->getHeight();
+	String debugStmt = "";
 	
 	// Counts the adjacent flagged tiles.
 	for (int i = -1; i < 2; i++) {
@@ -139,29 +153,45 @@ void tileCallback(Fl_Widget* widget) {
 		}
 	}
 	
+	if (board->debug) {
+		cout << "Tile at coordinate (" << x << ", " << y << ") was clicked.\n";
+		if (tile->hasMine()) {
+			cout << "Tile contains a mine.\n";
+		} else {
+			cout << "Tile has " << tile->getAdjacentMines() << " adjacent mines and " << flags << " flagged surrounding tiles.\n";
+		}
+	}
+	
 	switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE: {
 			// If it is a right/left simultaneous click on an already uncovered tile with proper surrounding flags.
 			if (tile->hasBeenClicked() && Fl::event_button3() != 0 && tile->getAdjacentMines() == flags) {
+				debugStmt = "Tile was validly left/right simultaneous clicked.\n\n";
 				propagateClick(tile, board);
 			} 
 			// If the tile has not been clicked and it is a left click only.
 			else if (tile->hasBeenClicked() == false && Fl::event_button3() == 0) {
+				debugStmt = "Tile was validly left clicked.\n\n";
 				simulateLeftClick(tile, board);
+			} else {
+				debugStmt = "Tile was invalidly left or left/right simultaneous clicked.\n\n";
 			}
 			break;
 		}
-		case FL_RIGHT_MOUSE: {
+		case FL_RIGHT_MOUSE: {		
 			// If it is a right/left simultaneous click on an already uncovered tile with proper surrounding flags.
 			if (tile->hasBeenClicked() && Fl::event_button1() != 0 && tile->getAdjacentMines() == flags) {
+				debugStmt = "Tile was validly left/right simultaneous clicked.\n\n";
 				propagateClick(tile, board);
 			}
 			// If the tile has been clicked and it is a normal right click.
 			else if (Fl::event_button1() != 0 || tile->hasBeenClicked()) {
+				debugStmt = "Tile was invalidly right or left/right simultaneous clicked.\n\n";
 				break;
 			}
 			// If the tile is blank and there are still flags that can be placed.
 			else if (tile->getRightClicks() == 0 && board->getNumbFlags() < board->getNumbMines()) {
+				debugStmt = "Tile was validly right clicked. Changing to flag.\n\n";
 				tile->image(flaggedMine->copy(tileSize, tileSize));
 				tile->setRightClicks(1);
 				board->addNumbFlags(1);
@@ -169,6 +199,7 @@ void tileCallback(Fl_Widget* widget) {
 			}
 			// If the tile is currently flagged.
 			else if (tile->getRightClicks() == 1) {
+				debugStmt = "Tile was validly right clicked. Changing to question.\n\n";
 				tile->image(question->copy(tileSize, tileSize));
 				tile->setRightClicks(2);
 				board->addNumbFlags(-1);
@@ -176,10 +207,14 @@ void tileCallback(Fl_Widget* widget) {
 			}
 			// If the tile is currently a question mark.
 			else {
+				debugStmt = "Tile was validly right clicked. Changing to normal uncovered.\n\n";
 				tile->image(coveredTile->copy(tileSize, tileSize));
 				tile->setRightClicks(0);
 			}
 			break;
 		}
+	}
+	if (board->debug) {
+		cout << debugStmt;
 	}
 }
