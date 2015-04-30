@@ -8,8 +8,8 @@ class Tile : public Fl_Button {
 	bool beenClicked = false;
 	int numbRightClicks = 0;
 	int adjacentMines = 0;
-	int xCoordinate;
-	int yCoordinate;
+	int xCoordinate; // Corresponds to the tile number from the left starting at 0.
+	int yCoordinate; // Corresponds to the tile number from the top starting at 0.
 	
 	public:
 		Tile(int, int, int, int);

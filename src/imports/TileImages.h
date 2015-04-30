@@ -1,6 +1,10 @@
 #include "std_lib_facilities_4.h"
 #include <FL/Fl_JPEG_Image.H>
 
+/**
+ * This contains static pointers to the images used for minesweeper.
+ */
+
 static int tileSize = 24;
 
 static Fl_JPEG_Image* normalSmiley = new Fl_JPEG_Image("tileImages/normalSmiley.jpg");

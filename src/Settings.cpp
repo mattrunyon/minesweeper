@@ -1,12 +1,12 @@
-#include "imports/Minesweeper.h"
+#include "imports/Settings.h"
 #include "imports/Board.h"
 #include <FL/fl_ask.H>
 #include <FL/Fl_Window.H>
 
-void Minesweeper_Window::start_cb(Fl_Widget* widget)
+void Settings_Window::start_cb(Fl_Widget* widget)
 {
 	Fl_Button* S = (Fl_Button*) widget;
-	Minesweeper_Window* settings = (Minesweeper_Window*) S->parent();
+	Settings_Window* settings = (Settings_Window*) S->parent();
 	Fl_Window* win = (Fl_Window*) settings->parent();
 	
 	int w, h, m;
@@ -28,20 +28,6 @@ void Minesweeper_Window::start_cb(Fl_Widget* widget)
 	if (settings->debugButton->value()) {
 		debugMode = true;
 	}
-	
-	/*settings->Start_Button->hide();
-	settings->Exit_Button->hide();
-	settings->D_Setting->hide();
-	settings->Easy_Button->hide();
-	settings->Med_Button->hide();
-	settings->Hard_Button->hide();
-	settings->Custom_Button->hide();
-	settings->Num_Tiles->hide();
-	settings->Num_Mines->hide();
-	settings->debugButton->hide();
-	settings->wInput->hide();
-	settings->hInput->hide();
-	settings->mineInput->hide();*/
 	
 	int choice = 1;
 	bool gameAlreadyGoing = Fl::next_window(win) != nullptr;
@@ -65,17 +51,10 @@ void Minesweeper_Window::start_cb(Fl_Widget* widget)
 	
 }
 
-void Minesweeper_Window::exit_cb(Fl_Widget* widget)
-{
-	Fl_Button* Q = (Fl_Button*) widget;
-	Minesweeper_Window* settings = (Minesweeper_Window*) Q->parent();
-	settings->hide();
-}
-
-void Minesweeper_Window::easy_pressed(Fl_Widget* widget)
+void Settings_Window::easy_pressed(Fl_Widget* widget)
 {
 	Fl_Button* E = (Fl_Button*) widget;
-	Minesweeper_Window* settings = (Minesweeper_Window*) E->parent();
+	Settings_Window* settings = (Settings_Window*) E->parent();
 	settings->Num_Tiles->label("Size of board: 9 x 9 board");
 	settings->Num_Mines->label("Number of mines: 10 mines");
 	settings->D_Setting->label("Set Difficulty: Easy");
@@ -89,10 +68,10 @@ void Minesweeper_Window::easy_pressed(Fl_Widget* widget)
 	settings->redraw();
 }
 
-void Minesweeper_Window::med_pressed(Fl_Widget* widget)
+void Settings_Window::med_pressed(Fl_Widget* widget)
 {
 	Fl_Button* M = (Fl_Button*) widget;
-	Minesweeper_Window* settings = (Minesweeper_Window*) M->parent();
+	Settings_Window* settings = (Settings_Window*) M->parent();
 	settings->Num_Tiles->label("Size of board: 16 x 16 board");
 	settings->Num_Mines->label("Number of mines: 40 mines");
 	settings->D_Setting->label("Set Difficulty: Medium");
@@ -106,10 +85,10 @@ void Minesweeper_Window::med_pressed(Fl_Widget* widget)
 	settings->redraw();
 }
 
-void Minesweeper_Window::hard_pressed(Fl_Widget* widget)
+void Settings_Window::hard_pressed(Fl_Widget* widget)
 {
 	Fl_Button* H = (Fl_Button*) widget;
-	Minesweeper_Window* settings = (Minesweeper_Window*) H->parent();
+	Settings_Window* settings = (Settings_Window*) H->parent();
 	settings->Num_Tiles->label("Size of board: 16 x 30 board");
 	settings->Num_Mines->label("Number of mines: 99 mines");
 	settings->D_Setting->label("Set Difficulty: Hard");
@@ -123,9 +102,9 @@ void Minesweeper_Window::hard_pressed(Fl_Widget* widget)
 	settings->redraw();
 }
 
-void Minesweeper_Window::custom_pressed(Fl_Widget* widget) {
+void Settings_Window::custom_pressed(Fl_Widget* widget) {
 	Fl_Button* C = (Fl_Button*) widget;
-	Minesweeper_Window* settings = (Minesweeper_Window*) C->parent();
+	Settings_Window* settings = (Settings_Window*) C->parent();
 	settings->Num_Tiles->label("Size of board: ");
 	settings->Num_Mines->label("Number of mines: ");
 	settings->D_Setting->label("Set Difficulty: Custom");
@@ -136,17 +115,13 @@ void Minesweeper_Window::custom_pressed(Fl_Widget* widget) {
 	settings->redraw();
 }
 
-Minesweeper_Window::Minesweeper_Window(int w, int h, const char* title):Fl_Group(0, 0, w,h,title) 
+Settings_Window::Settings_Window(int w, int h, const char* title):Fl_Group(0, 0, w,h,title) 
 { 
 	this->begin();
 	
 	// The start button and its callback
 	Start_Button = new Fl_Button(110, 105, 90, 20, "Start Game");
 	Start_Button->callback((Fl_Callback*) start_cb, this);
-	
-	// The Exit button and its callback
-	Exit_Button = new Fl_Button(110, 135, 90, 20, "Exit Game");
-	Exit_Button->callback((Fl_Callback*) exit_cb, this);
 	
 	// Settings Title
 	D_Setting = new Fl_Box(10, 0, 0, 20, "Set Difficulty: Easy");

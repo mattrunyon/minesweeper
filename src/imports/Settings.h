@@ -10,24 +10,22 @@
 #include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Check_Button.H>
 
-class Minesweeper_Window : public Fl_Group
+class Settings_Window : public Fl_Group
 {
 	int x_mines = 9;
 	int y_mines = 9;
 	int mines_count = 10;
 	
 	static void start_cb(Fl_Widget* widget);
-	static void exit_cb(Fl_Widget* widget);
 	static void easy_pressed(Fl_Widget* widget);
 	static void med_pressed(Fl_Widget* widget);
 	static void hard_pressed(Fl_Widget* widget);
 	static void custom_pressed(Fl_Widget* widget);
 	
 	public:
-		Minesweeper_Window(int w, int h, const char* title);
-		~Minesweeper_Window() {};
+		Settings_Window(int w, int h, const char* title);
+		~Settings_Window() {};
 		Fl_Button* Start_Button;
-		Fl_Button* Exit_Button;
 		Fl_Box* D_Setting;
 		Fl_Button* Easy_Button;
 		Fl_Button* Med_Button;

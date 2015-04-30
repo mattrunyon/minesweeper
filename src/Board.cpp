@@ -50,6 +50,15 @@ Board::Board(int w, int h, int m, bool d): Fl_Group(0, 0, tileSize*w, tileSize*h
 	generateMines();
 }
 
+/**
+ * Generates the minefield randomly.
+ * Seeds random generator with current time.
+ * Generates a random x, y coordinate for the number of mines to be generated.
+ * If the coordinate already has a mine, generates a new coordinate and trys again.
+ * Otherwise adds the mine to the tile.
+ * 
+ * If debug mode is enabled, turns the tiles that have mines red.
+ */
 void Board::generateMines() {
 	srand(time(NULL));
 	int x, y;
@@ -70,6 +79,11 @@ void Board::generateMines() {
 	}
 }
 
+/**
+ * Increments the count of adjacent mines for the tiles surrounding a given tile.
+ * Takes in the x,y coordinate of the tile containing the mine.
+ * Increments the field for adjacentMines in tiles surrounding the input tile.
+ */
 void Board::incrementSurroundings(int x, int y) {
 	for (int i = -1; i < 2; i++) {
 		for (int j = -1; j < 2; j++) {
@@ -113,6 +127,12 @@ bool Board::winGame() {
 	return tilesClicked == maxClicks;
 }
 
+/**
+ * Used to display mines for end game scenarios.
+ * Iterates through the board showing mines.
+ * If the player won the game, displays flags on all mines.
+ * If the player lost the game, displays incorrect mine picture on incorrectly flagged mines and mines on unflagged mines.
+ */
 void Board::displayAllMines(bool playerWin) {
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {

@@ -4,7 +4,7 @@
 #include <FL/Fl_JPEG_Image.H>
 
 Tile::Tile(int x, int y, int w, int h):Fl_Button(x, y, w, h) {
-	setXYCoordinate(x/w, (y-72)/h);
+	setXYCoordinate(x/w, (y-72)/h); // The -72 is because of the 72 pixels at the top of the board for timer, etc.
 	this->image(coveredTile->copy(tileSize,tileSize));
 	this->callback(tileCallback);
 }
@@ -25,6 +25,12 @@ int Tile::getAdjacentMines() {
 	return adjacentMines;
 }
 
+/**
+ * The vector uncoveredTiles contains pointers.
+ * The 0th index corresponds to an uncovered tile with 0 adjacent mines.
+ * The 1st index corresponds to an uncovered tile with 1 adjacent mines.
+ * Etc.
+ */
 void Tile::displayClickedTile() {
 	this->image(uncoveredTiles[adjacentMines]->copy(tileSize,tileSize));
 }

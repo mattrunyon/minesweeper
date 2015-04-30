@@ -1,9 +1,12 @@
 #include "imports/callbacks.h"
-#include "imports/Minesweeper.h"
+#include "imports/Settings.h"
 #include <FL/Fl_JPEG_Image.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Window.H>
 
+/**
+ * Iterates through the surrounding tiles (-1 to +1 x and y) and simulates a left click on them.
+ */
 void propagateClick(Tile* tile, Board* board) {
 	int x = tile->getXCoordinate();
 	int y = tile->getYCoordinate();
@@ -19,6 +22,15 @@ void propagateClick(Tile* tile, Board* board) {
 	}
 }
 
+/**
+ * What happens on a left click.
+ * If a mine has been clicked already, the function returns.
+ * If the mine is flagged (right clicks == 1), the function returns.
+ * If the tile has a mine, it calls endGame.
+ * If the tile does not have a mine, it displays the proper uncoveredTile image.
+ * If the tile has 0 adjacent mines, it also propagates the click around the tile with 0 adjacent mines.
+ * If it is a win game scenario, calls endGame.
+ */
 void simulateLeftClick(Tile* tile, Board* board) {
 	if (tile->hasBeenClicked()) {
 		return;
@@ -42,6 +54,11 @@ void simulateLeftClick(Tile* tile, Board* board) {
 	}
 }
 
+/**
+ * Stops the timer and ends the game.
+ * If the player won, displays the sunglasses smiley face and all mines as flags.
+ * If the player lost, displays the  displays the dead smiley, the losing mine, incorrect mines, and all other mines.
+ */
 void endGame(Tile* tile, Board* board) {
 	board->stopTimer();
 	if (board->winGame()) {
@@ -60,6 +77,10 @@ void endGame(Tile* tile, Board* board) {
 	board->setGameOver();
 }
 
+/**
+ * Resets the game using the current settings.
+ * If the smiley is clicked and the game is not over, asks if the user wants to reset the game.
+ */
 void smileyCallback(Fl_Widget* widget) {
 	Board* board = (Board*) widget->parent();
 	Fl_Window* window = (Fl_Window*) board->parent();
@@ -81,15 +102,21 @@ void smileyCallback(Fl_Widget* widget) {
 	}
 }
 
+/**
+ * Opens a new settings window.
+ */
 void settingsCallback(Fl_Widget* widget) {
 	Board* board = (Board*) widget->parent();
 	Fl_Window* window = (Fl_Window*) board->parent();
 	Fl_Window* win = new Fl_Window(0, 0, 330, 160, "Minesweeper");
-	Minesweeper_Window* settings = new Minesweeper_Window(330, 160, "Minesweeper");
+	Settings_Window* settings = new Settings_Window(330, 160, "Minesweeper");
 	win->end();
 	win->show();
 }
 
+/**
+ * Determines what happens when a tile is right or left clicked.
+ */
 void tileCallback(Fl_Widget* widget) {
 	Tile* tile = (Tile*) widget;
 	Board* board = (Board*) tile->parent();
@@ -102,6 +129,8 @@ void tileCallback(Fl_Widget* widget) {
 	int y = tile->getYCoordinate();
 	int width = board->getWidth();
 	int height = board->getHeight();
+	
+	// Counts the adjacent flagged tiles.
 	for (int i = -1; i < 2; i++) {
 		for (int j = -1; j < 2; j++) {
 			if (x+i >= 0 && x+i < width && y+j >= 0 && y+j < height && board->XYCoordinates[x+i][y+j]->getRightClicks() == 1) {
@@ -112,29 +141,41 @@ void tileCallback(Fl_Widget* widget) {
 	
 	switch (Fl::event_button()) {
 		case FL_LEFT_MOUSE: {
+			// If it is a right/left simultaneous click on an already uncovered tile with proper surrounding flags.
 			if (tile->hasBeenClicked() && Fl::event_button3() != 0 && tile->getAdjacentMines() == flags) {
 				propagateClick(tile, board);
-			} else if (tile->hasBeenClicked() == false && Fl::event_button3() == 0) {
+			} 
+			// If the tile has not been clicked and it is a left click only.
+			else if (tile->hasBeenClicked() == false && Fl::event_button3() == 0) {
 				simulateLeftClick(tile, board);
 			}
 			break;
 		}
 		case FL_RIGHT_MOUSE: {
+			// If it is a right/left simultaneous click on an already uncovered tile with proper surrounding flags.
 			if (tile->hasBeenClicked() && Fl::event_button1() != 0 && tile->getAdjacentMines() == flags) {
 				propagateClick(tile, board);
-			} else if (Fl::event_button1() != 0 || tile->hasBeenClicked()) {
+			}
+			// If the tile has been clicked and it is a normal right click.
+			else if (Fl::event_button1() != 0 || tile->hasBeenClicked()) {
 				break;
-			} else if (tile->getRightClicks() == 0 && board->getNumbFlags() < board->getNumbMines()) {
+			}
+			// If the tile is blank and there are still flags that can be placed.
+			else if (tile->getRightClicks() == 0 && board->getNumbFlags() < board->getNumbMines()) {
 				tile->image(flaggedMine->copy(tileSize, tileSize));
 				tile->setRightClicks(1);
 				board->addNumbFlags(1);
 				board->minesRemaining->copy_label(to_string(board->getNumbMines() - board->getNumbFlags()).c_str());
-			} else if (tile->getRightClicks() == 1) {
+			}
+			// If the tile is currently flagged.
+			else if (tile->getRightClicks() == 1) {
 				tile->image(question->copy(tileSize, tileSize));
 				tile->setRightClicks(2);
 				board->addNumbFlags(-1);
 				board->minesRemaining->copy_label(to_string(board->getNumbMines() - board->getNumbFlags()).c_str());
-			} else {
+			}
+			// If the tile is currently a question mark.
+			else {
 				tile->image(coveredTile->copy(tileSize, tileSize));
 				tile->setRightClicks(0);
 			}
