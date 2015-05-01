@@ -30,7 +30,14 @@ void Settings_Window::start_cb(Fl_Widget* widget)
 	}
 	
 	int choice = 1;
-	bool gameAlreadyGoing = Fl::next_window(win) != nullptr;
+	bool gameAlreadyGoing = false;
+	// Checks to see if a Game window already exists.
+	while (Fl::next_window(win) != nullptr && !gameAlreadyGoing) {
+		gameAlreadyGoing = Fl::next_window(win)->label() == "Game";
+		win = Fl::next_window(win);
+	}
+	win = (Fl_Window*) settings->parent();
+	
 	if (gameAlreadyGoing) {
 		choice = fl_choice("Are you sure you want to reset the game?", "Cancel", "Yes", "No");
 	}
@@ -43,7 +50,7 @@ void Settings_Window::start_cb(Fl_Widget* widget)
 		Board* board = new Board(w, h, m, debugMode);
 		Fl::delete_widget(Fl::next_window(win));
 		Fl::delete_widget(win);
-		win = new Fl_Window(win->x(), win->y(), board->w(), board->h());
+		win = new Fl_Window(win->x(), win->y(), board->w(), board->h(), "Game");
 		win->end();
 		win->add(board);
 		win->show();
