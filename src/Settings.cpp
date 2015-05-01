@@ -121,6 +121,40 @@ void Settings_Window::custom_pressed(Fl_Widget* widget) {
 	settings->redraw();
 }
 
+void Settings_Window::about_pressed(Fl_Widget* widget) {
+	Fl_Button* A = (Fl_Button*) widget;
+	Settings_Window* settings = (Settings_Window*) A->parent();
+	Fl_Window* win = (Fl_Window*) settings->parent();
+	bool aboutOpen = false;
+	// While a next window exists and an about window has not been found as open.
+	while (Fl::next_window(win) != nullptr && !aboutOpen) {
+		aboutOpen = Fl::next_window(win)->label() == "About Game";
+		win = Fl::next_window(win);
+	}
+	win = (Fl_Window*) settings->parent();
+	
+	if (!aboutOpen) {
+		settings->aboutWin = new Fl_Window(win->x(), win->y(), 340, 160, "About Game");
+		Fl_Box* classInfo = new Fl_Box(0, 0, 340, 20, "TAMU CSCE 121-510 Spring 2015 Final Project");
+		Fl_Box* mattBox = new Fl_Box(10, 30, 100, 100);
+		Fl_JPEG_Image* matt = new Fl_JPEG_Image("tileImages/MatthewRunyon.jpg");
+		mattBox->image(matt->copy(100, 100));
+		
+		Fl_Box* jamesBox = new Fl_Box(120, 30, 100, 100);
+		Fl_JPEG_Image* james = new Fl_JPEG_Image("tileImages/JamesCoy.jpg");
+		jamesBox->image(james->copy(100, 100));
+		
+		Fl_Box* xavierBox = new Fl_Box(230, 30, 100, 100);
+		Fl_JPEG_Image* xavier = new Fl_JPEG_Image("tileImages/XavierOsta.jpg");
+		xavierBox->image(xavier->copy(100, 100));
+		
+		Fl_Box* names = new Fl_Box(-8, 140, 340, 20, "Matthew Runyon     James Coy         Xavier Osta");
+		
+		settings->aboutWin->end();
+		settings->aboutWin->show();
+	}
+}
+
 Settings_Window::Settings_Window(int w, int h, const char* title):Fl_Group(0, 0, w,h,title) 
 { 
 	this->begin();
@@ -128,6 +162,10 @@ Settings_Window::Settings_Window(int w, int h, const char* title):Fl_Group(0, 0,
 	// The start button and its callback
 	Start_Button = new Fl_Button(110, 105, 90, 20, "Start Game");
 	Start_Button->callback((Fl_Callback*) start_cb, this);
+	
+	// The about button
+	About_Button = new Fl_Button(230, 105, 90, 20, "About Game");
+	About_Button->callback((Fl_Callback*) about_pressed, this);
 	
 	// Settings Title
 	D_Setting = new Fl_Box(10, 0, 0, 20, "Set Difficulty: Easy");

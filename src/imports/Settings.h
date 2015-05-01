@@ -21,6 +21,7 @@ class Settings_Window : public Fl_Group
 	static void med_pressed(Fl_Widget* widget);
 	static void hard_pressed(Fl_Widget* widget);
 	static void custom_pressed(Fl_Widget* widget);
+	static void about_pressed(Fl_Widget* widget);
 	
 	public:
 		Settings_Window(int w, int h, const char* title);
@@ -37,5 +38,6 @@ class Settings_Window : public Fl_Group
 		Fl_Int_Input* hInput;
 		Fl_Int_Input* mineInput;
 		Fl_Check_Button* debugButton;
-		Fl_Button* about;
+		Fl_Button* About_Button;
+		Fl_Window* aboutWin = nullptr;
 };
